@@ -1,3 +1,4 @@
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
@@ -7,8 +8,16 @@ if r.status_code == requests.codes.ok:
     soup = BeautifulSoup(r.text, 'html.parser')
     result_set = soup.find_all("ul")[16].select('li')
 
+    title_list = []
+    content_list = []
+
     for i in result_set:
         column = i.find_all('span')
         title = column[0].text
         content = column[1].text
-        print(f'{title}: {content}')
+        title_list.append(title)
+        content_list.append(content)
+
+    stock_name = soup.find('h1').text
+    df = pd.DataFrame(content_list, index=[title_list], columns=[stock_name])
+    print(df)
